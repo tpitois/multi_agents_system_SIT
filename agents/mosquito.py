@@ -41,8 +41,8 @@ class Mosquito(object):
     :type age: int
     :param male: Whether the mosquito is male.
     :type male: bool
-    :param lifetime_dist: Distribution parameters for the mosquito's lifetime.
-    :type lifetime_dist: dict
+    :param lifespan_dist: Distribution parameters for the mosquito's lifespan.
+    :type lifespan_dist: dict
     :param maturing_age_dist: Distribution parameters for the mosquito's maturing age.
     :type maturing_age_dist: dict
     :param fertile: Whether the mosquito is fertile, defaults to True.
@@ -50,12 +50,12 @@ class Mosquito(object):
     :param mated: Whether the mosquito is mated, defaults to False.
     :type mated: bool, optional
     """
-    def __init__(self, patch, age, male, lifetime_dist, maturing_age_dist=config["egg"]["maturing_age"],
+    def __init__(self, patch, age, male, lifespan_dist, maturing_age_dist=config["egg"]["maturing_age"],
                  fertile=True, mated=False):
         self.__patch = patch
         self.__age = age
         self.__male = male
-        self.__lifetime = getattr(stats, lifetime_dist["dist"]).rvs(*lifetime_dist["params"])
+        self.__lifespan = getattr(stats, lifespan_dist["dist"]).rvs(*lifespan_dist["params"])
         self.__maturing_age = getattr(stats, maturing_age_dist["dist"]).rvs(*maturing_age_dist["params"])
         self.__fertile = fertile
         self.__mated = mated
@@ -149,7 +149,7 @@ class Egg(Mosquito):
     :type male: bool
     """
     def __init__(self, patch, male):
-        super().__init__(patch, 0, male, config["egg"]["lifetime"], config["egg"]["maturing_age"])
+        super().__init__(patch, 0, male, config["egg"]["lifespan"], config["egg"]["maturing_age"])
 
     def grow_old(self, dt):
         """
@@ -161,7 +161,7 @@ class Egg(Mosquito):
         :rtype: tuple
         """
         self._Mosquito__age += dt
-        if self._Mosquito__age > self._Mosquito__lifetime:
+        if self._Mosquito__age > self._Mosquito__lifespan:
             return self, False
         if self._Mosquito__age > self._Mosquito__maturing_age:
             return Larva(self._Mosquito__patch, self._Mosquito__age, self._Mosquito__male), True
@@ -179,7 +179,7 @@ class Larva(Mosquito):
     :type male: bool
     """
     def __init__(self, patch, age, male):
-        super().__init__(patch, age, male, config["larva"]["lifetime"], config["larva"]["maturing_age"])
+        super().__init__(patch, age, male, config["larva"]["lifespan"], config["larva"]["maturing_age"])
 
     def grow_old(self, dt):
         """
@@ -191,7 +191,7 @@ class Larva(Mosquito):
         :rtype: tuple
         """
         self._Mosquito__age += dt
-        if self._Mosquito__age > self._Mosquito__lifetime:
+        if self._Mosquito__age > self._Mosquito__lifespan:
             return self, False
         if self._Mosquito__age > self._Mosquito__maturing_age:
             return Pupa(self._Mosquito__patch, self._Mosquito__age, self._Mosquito__male), True
@@ -209,7 +209,7 @@ class Pupa(Mosquito):
     :type male: bool
     """
     def __init__(self, patch, age, male):
-        super().__init__(patch, age, male, config["pupa"]["lifetime"], config["pupa"]["maturing_age"])
+        super().__init__(patch, age, male, config["pupa"]["lifespan"], config["pupa"]["maturing_age"])
 
     def grow_old(self, dt):
         """
@@ -221,7 +221,7 @@ class Pupa(Mosquito):
         :rtype: tuple
         """
         self._Mosquito__age += dt
-        if self._Mosquito__age > self._Mosquito__lifetime:
+        if self._Mosquito__age > self._Mosquito__lifespan:
             return self, False
         if self._Mosquito__age > self._Mosquito__maturing_age:
             return Adult(self._Mosquito__patch, self._Mosquito__age, self._Mosquito__male, True), True
@@ -241,7 +241,7 @@ class Adult(Mosquito):
     :type fertile: bool
     """
     def __init__(self, patch, age, male, fertile):
-        super().__init__(patch, age, male, config[["female adult", "male adult"][male]]["lifetime"], fertile=fertile)
+        super().__init__(patch, age, male, config[["female adult", "male adult"][male]]["lifespan"], fertile=fertile)
         self.__cycle_number = 0
         self.__next_cycle = 0
 
@@ -256,7 +256,7 @@ class Adult(Mosquito):
         :rtype: tuple
         """
         self._Mosquito__age += dt
-        if self._Mosquito__age > self._Mosquito__lifetime:
+        if self._Mosquito__age > self._Mosquito__lifespan:
             return self, False, False
         if (not self._Mosquito__male and self.__cycle_number < config["female adult"]["mate"]["max cycle"]
                 and self.__next_cycle - dt < self._Mosquito__age < self.__next_cycle + dt):

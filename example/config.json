@@ -17,7 +17,7 @@
   ],
 
   "egg": {
-    "lifetime": {
+    "lifespan": {
       "dist": "geom",
       "params": [0.01]
     },
@@ -29,7 +29,7 @@
 
 
   "larva": {
-    "lifetime": {
+    "lifespan": {
       "dist": "geom",
       "params": [0.01]
     },
@@ -41,7 +41,7 @@
 
 
   "pupa": {
-    "lifetime": {
+    "lifespan": {
       "dist": "geom",
       "params": [0.01]
     },
@@ -53,7 +53,7 @@
 
 
   "male adult": {
-    "lifetime": {
+    "lifespan": {
       "dist": "geom",
       "params": [
         0.10
@@ -62,7 +62,7 @@
   },
 
   "female adult": {
-    "lifetime": {
+    "lifespan": {
       "dist": "geom",
       "params": [0.05]
     },

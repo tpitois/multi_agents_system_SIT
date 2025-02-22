@@ -11,8 +11,7 @@ This project simulates the life cycle of mosquitoes in a multi-agent system, foc
 
 ## Installation
 
-To run the simulation, you need to have Python installed on your system. You can download Python from [python.org](https://www.python.org/).
-
+Clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/your-username/mosquito-simulation.git
@@ -41,6 +40,19 @@ python main.py <config_file> <init_mosquito_file> <control_file> <folder_name>
   _(Default: `example/control.csv`)_
 - `<folder_name>`: Name of the folder where results are saved  
   _(Default: `results`)_
+
+### Configuration file
+The `config.json` file defines essential parameters for the simulation, such as the total period, time step, number of patches, mating rates, migration rates, and life stage-specific parameters.
+Some parameters, such as `lifespan`, are distributions in this case distribution name and parameters refer to `scipy.stats`.
+
+
+### Initial mosquitoes file
+
+The `init_mosquitoes.csv` file defines the initial number of mosquitoes in each patch for different mosquito classes.
+
+### Control file
+
+The `control.csv` file should have a structured format where each row represents a time step, and each column (except the first) represents a patch. The values indicate the number of mosquitoes to be added at each time step in each patch.
 
 ## Project Structure
 
