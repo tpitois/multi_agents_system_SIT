@@ -181,9 +181,11 @@ class Environment(object):
         :param number_of_eggs_dist: Distribution parameters for the number of eggs.
         :type number_of_eggs_dist: dict
         """
-        number_of_eggs = getattr(stats, number_of_eggs_dist["dist"]).rvs(*number_of_eggs_dist["params"])
+        number_of_female_eggs = getattr(stats, number_of_eggs_dist["female"]["dist"]).rvs(*number_of_eggs_dist["female"]["params"])
+        number_of_male_eggs = getattr(stats, number_of_eggs_dist["male"]["dist"]).rvs(*number_of_eggs_dist["male"]["params"])
         self.add_mosquitoes(
-            [Egg(patch, random.random() < 0.5) for _ in range(int(number_of_eggs))]
+            [Egg(patch, False) for _ in range(int(number_of_female_eggs))]
+            + [Egg(patch, True) for _ in range(int(number_of_male_eggs))]
         )
 
     def add_sterile_mosquitoes(self, control):

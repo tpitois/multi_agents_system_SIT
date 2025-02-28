@@ -1,3 +1,6 @@
+# Ignore results folder
+results/
+
 # Ignore PyCharm .idea folder
 .idea/
 

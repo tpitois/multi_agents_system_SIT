@@ -72,8 +72,8 @@
         "params": [2.5, 0.5]
       },
       "number of eggs": {
-        "dist": "norm",
-        "params": [100, 50]
+        "male": {"dist": "norm", "params": [16, 2]},
+        "female": {"dist": "norm", "params": [11, 2]}
       },
       "max cycle": 5
     }
