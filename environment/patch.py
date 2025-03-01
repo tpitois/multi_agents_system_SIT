@@ -13,7 +13,7 @@ class Patch(object):
     :type migration_rates: list of float
     """
 
-    def __init__(self, mating_rate, migration_rates):
+    def __init__(self, mating_rate, migration_rates, capacity):
         """
         Constructor.
 
@@ -24,6 +24,7 @@ class Patch(object):
         """
         self.__mating_rate = mating_rate
         self.__migration_rates = migration_rates
+        self.__capacity = capacity
         self.__cum_migration_rates = np.cumsum(self.__migration_rates)
         self.__mosquitoes = {}
 
@@ -93,6 +94,10 @@ class Patch(object):
         :rtype: float
         """
         return self.__mating_rate
+
+    @property
+    def capacity(self):
+        return self.__capacity
 
     def random_destination(self):
         """

@@ -4,7 +4,7 @@ from typing import List
 
 from scipy import stats
 
-from agents.mosquito import MOSQUITO_TYPE, Mosquito, Egg, Adult
+from agents.mosquito import MOSQUITO_TYPE, Mosquito, Egg, Adult, name_to_type
 from environment.patch import Patch
 
 class Environment(object):
@@ -181,8 +181,15 @@ class Environment(object):
         :param number_of_eggs_dist: Distribution parameters for the number of eggs.
         :type number_of_eggs_dist: dict
         """
+        max_eggs = (self.__patches[patch].capacity -
+                    sum(self.__patches[patch].get_mosquitoes_number(name_to_type(name))
+                        for name in ["Male Egg", "Female Egg"]))
+
         number_of_female_eggs = getattr(stats, number_of_eggs_dist["female"]["dist"]).rvs(*number_of_eggs_dist["female"]["params"])
         number_of_male_eggs = getattr(stats, number_of_eggs_dist["male"]["dist"]).rvs(*number_of_eggs_dist["male"]["params"])
+        K = min(max_eggs/(number_of_female_eggs + number_of_male_eggs), 1)
+        number_of_female_eggs *= K
+        number_of_male_eggs *= K
         self.add_mosquitoes(
             [Egg(patch, False) for _ in range(int(number_of_female_eggs))]
             + [Egg(patch, True) for _ in range(int(number_of_male_eggs))]

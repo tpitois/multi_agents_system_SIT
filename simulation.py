@@ -26,7 +26,7 @@ def run_simulation(init_mosquito_file="example/init_mosquitoes.csv", control_fil
     dt = config["dt"]
     N = config["number_of_patches"]
 
-    patches = [Patch(config["mating_rates"][i], config["migration_rates"][i]) for i in range(N)]
+    patches = [Patch(config["mating_rates"][i], config["migration_rates"][i], config["capacity"][i]) for i in range(N)]
     mosquitoes = read_init_mosquitoes(init_mosquito_file)
     mosquitoes = random.sample(mosquitoes, len(mosquitoes))
 
@@ -42,7 +42,7 @@ def run_simulation(init_mosquito_file="example/init_mosquitoes.csv", control_fil
 
         if mosquito is None:
             result.add_populations(environment.get_populations())
-            environment.add_sterile_mosquitoes(control)
+            #environment.add_sterile_mosquitoes(control)
             environment.next_time()
             environment.add_sentinel()
             mosquito = environment.get_mosquito()

@@ -1,8 +1,9 @@
 {
-  "period": 20,
+  "period": 100,
   "dt": 1,
   "number_of_patches": 10,
   "mating_rates": [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],
+  "capacity": [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],
   "migration_rates": [
     [0.95, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     [0.0, 0.95, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -69,13 +70,13 @@
     "mate": {
       "next cycle": {
         "dist": "norm",
-        "params": [2.5, 0.5]
+        "params": [1, 0]
       },
       "number of eggs": {
         "male": {"dist": "norm", "params": [16, 2]},
         "female": {"dist": "norm", "params": [11, 2]}
       },
-      "max cycle": 5
+      "max cycle": 10000
     }
   }
 
