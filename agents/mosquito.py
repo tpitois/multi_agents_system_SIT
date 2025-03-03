@@ -1,53 +1,57 @@
 from scipy import stats
 from data.reading import get_config
 
+# List of mosquito types based on stage, sex, fertility, and mating status.
 MOSQUITO_TYPE = ([(stage, male, 1, 0) for stage in ["Egg", "Larva", "Pupa"] for male in [1, 0]] +
                  [("Adult", 1, 1, 0), ("Adult", 0, 1, 0), ("Adult", 1, 0, 0), ("Adult", 0, 0, 0), ("Adult", 0, 0, 1)])
+
+# List of names corresponding to each type in MOSQUITO_TYPE.
 MOSQUITO_NAME = ["Male Egg", "Female Egg", "Male Larva", "Female Larva", "Male Pupa", "Female Pupa",
                  "Fertile Male Adult", "Fertile Female Adult", "Sterile Male Adult", "Sterile Female Adult",
                  "Mated Female Adult"]
 
-def type_to_name(type):
+def type_to_name(mosquito_type):
     """
-    Convert a mosquito type to its corresponding name.
+    Convert a mosquito type tuple to its corresponding name.
 
-    :param type: Mosquito type.
-    :type type: tuple
-    :return: Mosquito name.
+    :param mosquito_type: Tuple representing the mosquito type.
+    :type mosquito_type: tuple
+    :return: The name corresponding to the mosquito type.
     :rtype: str
     """
-    return MOSQUITO_NAME[MOSQUITO_TYPE.index(type)]
+    return MOSQUITO_NAME[MOSQUITO_TYPE.index(mosquito_type)]
 
 def name_to_type(name):
     """
-    Convert a mosquito name to its corresponding type.
+    Convert a mosquito name to its corresponding type tuple.
 
-    :param name: Mosquito name.
+    :param name: The name of the mosquito.
     :type name: str
-    :return: Mosquito type.
+    :return: Tuple representing the mosquito type.
     :rtype: tuple
     """
     return MOSQUITO_TYPE[MOSQUITO_NAME.index(name)]
 
+# Load configuration parameters for mosquito attributes.
 config = get_config()
 
-class Mosquito(object):
+class Mosquito:
     """
-    Base class for representing a mosquito.
+    Base class representing a mosquito with various attributes.
 
-    :param patch: The patch where the mosquito is located.
+    :param patch: The patch (location) where the mosquito is situated.
     :type patch: Patch
     :param age: The age of the mosquito.
     :type age: int
-    :param male: Whether the mosquito is male.
+    :param male: Boolean indicating if the mosquito is male.
     :type male: bool
     :param lifespan_dist: Distribution parameters for the mosquito's lifespan.
     :type lifespan_dist: dict
     :param maturing_age_dist: Distribution parameters for the mosquito's maturing age.
     :type maturing_age_dist: dict
-    :param fertile: Whether the mosquito is fertile, defaults to True.
+    :param fertile: Boolean indicating if the mosquito is fertile, defaults to True.
     :type fertile: bool, optional
-    :param mated: Whether the mosquito is mated, defaults to False.
+    :param mated: Boolean indicating if the mosquito is mated, defaults to False.
     :type mated: bool, optional
     """
     def __init__(self, patch, age, male, lifespan_dist, maturing_age_dist=config["egg"]["maturing_age"],
@@ -63,7 +67,7 @@ class Mosquito(object):
     @property
     def patch(self):
         """
-        The patch where the mosquito is located.
+        Get the patch (location) where the mosquito is situated.
 
         :return: The patch.
         :rtype: Patch
@@ -73,7 +77,7 @@ class Mosquito(object):
     @patch.setter
     def patch(self, value):
         """
-        Set the patch where the mosquito is located.
+        Set the patch (location) where the mosquito is situated.
 
         :param value: The new patch.
         :type value: Patch
@@ -83,7 +87,7 @@ class Mosquito(object):
     @property
     def age(self):
         """
-        The age of the mosquito.
+        Get the age of the mosquito.
 
         :return: The age.
         :rtype: int
@@ -93,7 +97,7 @@ class Mosquito(object):
     @property
     def male(self):
         """
-        Whether the mosquito is male.
+        Check if the mosquito is male.
 
         :return: True if male, False otherwise.
         :rtype: bool
@@ -103,7 +107,7 @@ class Mosquito(object):
     @property
     def female(self):
         """
-        Whether the mosquito is female.
+        Check if the mosquito is female.
 
         :return: True if female, False otherwise.
         :rtype: bool
@@ -113,7 +117,7 @@ class Mosquito(object):
     @property
     def fertile(self):
         """
-        Whether the mosquito is fertile.
+        Check if the mosquito is fertile.
 
         :return: True if fertile, False otherwise.
         :rtype: bool
@@ -123,7 +127,7 @@ class Mosquito(object):
     @property
     def mated(self):
         """
-        Whether the mosquito is mated.
+        Check if the mosquito is mated.
 
         :return: True if mated, False otherwise.
         :rtype: bool
@@ -141,11 +145,11 @@ class Mosquito(object):
 
 class Egg(Mosquito):
     """
-    Class representing an egg stage of a mosquito.
+    Class representing the egg stage of a mosquito.
 
     :param patch: The patch where the egg is located.
     :type patch: Patch
-    :param male: Whether the egg will hatch into a male mosquito.
+    :param male: Boolean indicating if the egg will hatch into a male mosquito.
     :type male: bool
     """
     def __init__(self, patch, male):
@@ -169,13 +173,13 @@ class Egg(Mosquito):
 
 class Larva(Mosquito):
     """
-    Class representing a larva stage of a mosquito.
+    Class representing the larva stage of a mosquito.
 
     :param patch: The patch where the larva is located.
     :type patch: Patch
     :param age: The age of the larva.
     :type age: int
-    :param male: Whether the larva is male.
+    :param male: Boolean indicating if the larva is male.
     :type male: bool
     """
     def __init__(self, patch, age, male):
@@ -199,13 +203,13 @@ class Larva(Mosquito):
 
 class Pupa(Mosquito):
     """
-    Class representing a pupa stage of a mosquito.
+    Class representing the pupa stage of a mosquito.
 
     :param patch: The patch where the pupa is located.
     :type patch: Patch
     :param age: The age of the pupa.
     :type age: int
-    :param male: Whether the pupa is male.
+    :param male: Boolean indicating if the pupa is male.
     :type male: bool
     """
     def __init__(self, patch, age, male):
@@ -229,19 +233,20 @@ class Pupa(Mosquito):
 
 class Adult(Mosquito):
     """
-    Class representing an adult stage of a mosquito.
+    Class representing the adult stage of a mosquito.
 
     :param patch: The patch where the adult is located.
     :type patch: Patch
     :param age: The age of the adult.
     :type age: int
-    :param male: Whether the adult is male.
+    :param male: Boolean indicating if the adult is male.
     :type male: bool
-    :param fertile: Whether the adult is fertile.
+    :param fertile: Boolean indicating if the adult is fertile.
     :type fertile: bool
     """
     def __init__(self, patch, age, male, fertile):
-        super().__init__(patch, age, male, config[["female adult", "male adult"][male]]["lifespan"], fertile=fertile)
+        lifespan_key = ["female adult", "male adult", "sterile male adult"][male + (not fertile)]
+        super().__init__(patch, age, male, config[lifespan_key]["lifespan"], fertile=fertile)
         self.__cycle_number = 0
         self.__next_cycle = 0
 
@@ -251,8 +256,8 @@ class Adult(Mosquito):
 
         :param dt: The time increment.
         :type dt: int
-        :return: A tuple containing the current stage of the mosquito, a boolean indicating if it is alive and
-        a boolean indicating if it lays eggs.
+        :return: A tuple containing the current stage of the mosquito, a boolean indicating if it is alive,
+                 and a boolean indicating if it lays eggs.
         :rtype: tuple
         """
         self._Mosquito__age += dt

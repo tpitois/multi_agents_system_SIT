@@ -4,6 +4,7 @@ from data.result import Result
 from data.control import Control
 from data.reading import get_config, read_init_mosquitoes
 
+from concurrent.futures import wait, ThreadPoolExecutor
 import random
 
 def run_simulation(init_mosquito_file="example/init_mosquitoes.csv", control_file="example/control.csv", folder_name="results"):
@@ -20,6 +21,7 @@ def run_simulation(init_mosquito_file="example/init_mosquitoes.csv", control_fil
     :param folder_name: Name of the folder where results are saved, defaults to "results".
     :type folder_name: str, optional
     """
+
     config = get_config()
 
     T = config["period"]
@@ -38,24 +40,23 @@ def run_simulation(init_mosquito_file="example/init_mosquitoes.csv", control_fil
     result.add_populations(environment.get_populations())
 
     while environment.time < T:
-        mosquito = environment.get_mosquito()
 
-        if mosquito is None:
+        if environment.empty_queue():
+            print(environment.time)
             result.add_populations(environment.get_populations())
-            #environment.add_sterile_mosquitoes(control)
+            environment.add_sterile_mosquitoes(control)
             environment.next_time()
-            environment.add_sentinel()
-            mosquito = environment.get_mosquito()
-            if mosquito is None:
-                break
+
+        mosquito = environment.get_mosquito()
 
         mosquito, alive = environment.grow_old(mosquito, config)
 
         if not alive:
             continue
 
-        environment.mate(mosquito)
+        environment.mate(mosquito, config)
         environment.migrate(mosquito)
+
 
     result.write()
     result.draw()

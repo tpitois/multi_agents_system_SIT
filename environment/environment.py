@@ -1,13 +1,13 @@
 import queue
 import random
-from typing import List
+from typing import List, Optional, Tuple
 
 from scipy import stats
 
 from agents.mosquito import MOSQUITO_TYPE, Mosquito, Egg, Adult, name_to_type
 from environment.patch import Patch
 
-class Environment(object):
+class Environment:
     """
     This class represents the environment for a multi-agent system simulation.
 
@@ -19,7 +19,7 @@ class Environment(object):
     :type dt: int
     """
 
-    def __init__(self, mosquitoes: List[Mosquito], patches: List[Patch], dt):
+    def __init__(self, mosquitoes: List[Mosquito], patches: List[Patch], dt: int):
         """
         Constructor.
 
@@ -32,13 +32,13 @@ class Environment(object):
         """
         self.__time = 0
         self.__dt = dt
+        self.__current_queue = 0
         self.__patches = patches
-        self.__mosquitoes = queue.Queue()
+        self.__mosquitoes = [queue.Queue(), queue.Queue()]
         self.add_mosquitoes(mosquitoes)
-        self.__mosquitoes.put(None)
 
     @property
-    def time(self):
+    def time(self) -> int:
         """
         Get the current time in the environment.
 
@@ -47,16 +47,6 @@ class Environment(object):
         """
         return self.__time
 
-    @property
-    def size(self):
-        """
-        Get the number of mosquitoes in the environment.
-
-        :return: Number of mosquitoes.
-        :rtype: int
-        """
-        return len(self.__mosquitoes.queue)
-
     def __add_mosquito(self, mosquito: Mosquito):
         """
         Add a mosquito to the environment.
@@ -64,10 +54,10 @@ class Environment(object):
         :param mosquito: Mosquito to add.
         :type mosquito: Mosquito
         """
-        self.__mosquitoes.put(mosquito)
+        self.__mosquitoes[(self.__current_queue + 1) % 2].put(mosquito)
         self.__patches[mosquito.patch].add_mosquito(mosquito)
 
-    def add_mosquitoes(self, mosquitoes=None):
+    def add_mosquitoes(self, mosquitoes: Optional[List[Mosquito]] = None):
         """
         Add a list of mosquitoes to the environment.
 
@@ -79,28 +69,29 @@ class Environment(object):
         for mosquito in mosquitoes:
             self.__add_mosquito(mosquito)
 
-    def get_mosquito(self):
+    def get_mosquito(self) -> Mosquito:
         """
         Get the next mosquito from the queue.
 
         :return: Next mosquito.
         :rtype: Mosquito
         """
-        return self.__mosquitoes.get()
+        return self.__mosquitoes[self.__current_queue].get()
 
     def add_sentinel(self):
         """
         Add a sentinel (None) to the mosquito queue.
         """
-        self.__mosquitoes.put(None)
+        self.__mosquitoes[self.__current_queue].put(None)
 
     def next_time(self):
         """
         Advance the environment time by one time step.
         """
         self.__time += self.__dt
+        self.__current_queue = (self.__current_queue + 1) % 2
 
-    def grow_old(self, mosquito, config):
+    def grow_old(self, mosquito: Mosquito, config: dict) -> Tuple[Optional[Mosquito], bool]:
         """
         Age the mosquito by one time step and make it lay eggs or not.
 
@@ -109,7 +100,7 @@ class Environment(object):
         :param config: Configuration dictionary containing parameters for the simulation.
         :type config: dict
         :return: Tuple containing the new mosquito and a boolean indicating if it is alive.
-        :rtype: tuple
+        :rtype: Tuple[Optional[Mosquito], bool]
         """
         if mosquito.stage() == "Adult":
             new_mosquito, alive, lay_eggs = mosquito.grow_old(self.__dt)
@@ -129,31 +120,32 @@ class Environment(object):
             self.__patches[new_mosquito.patch].add_mosquito(new_mosquito)
         return new_mosquito, True
 
-    def mate(self, mosquito):
+    def mate(self, mosquito: Mosquito, config: dict):
         """
         Attempt to mate the mosquito.
 
         :param mosquito: Mosquito to mate.
         :type mosquito: Mosquito
+        :param config: Configuration dictionary containing parameters for the simulation.
+        :type config: dict
         """
         patch = self.__patches[mosquito.patch]
         if not (mosquito.stage() == "Adult" and mosquito.female and mosquito.fertile
                 and random.random() < patch.mating_rate):
             return
-
         mosquito.become_sterile(patch)
-        if patch.is_fertile_partner():
+        if patch.is_fertile_partner(config["sterile male adult"]["competitiveness"]):
             mosquito.become_mated(patch)
 
-    def migrate(self, mosquito):
+    def migrate(self, mosquito: Mosquito):
         """
         Attempt to migrate the mosquito to another patch.
 
         :param mosquito: Mosquito to migrate.
         :type mosquito: Mosquito
         """
-        if not mosquito.stage() == "Adult":
-            self.__mosquitoes.put(mosquito)
+        if mosquito.stage() != "Adult":
+            self.__add_mosquito(mosquito)
             return
 
         id_destination = self.__patches[mosquito.patch].random_destination()
@@ -161,9 +153,9 @@ class Environment(object):
             self.__patches[mosquito.patch].remove_mosquito(mosquito)
             mosquito.patch = id_destination
             self.__patches[id_destination].add_mosquito(mosquito)
-        self.__mosquitoes.put(mosquito)
+        self.__mosquitoes[(self.__current_queue + 1) % 2].put(mosquito)
 
-    def get_populations(self):
+    def get_populations(self) -> List[List[int]]:
         """
         Get the populations of mosquitoes in each patch.
 
@@ -172,7 +164,7 @@ class Environment(object):
         """
         return [[patch.get_mosquitoes_number(type) for type in MOSQUITO_TYPE] for patch in self.__patches]
 
-    def __lay_eggs(self, patch, number_of_eggs_dist):
+    def __lay_eggs(self, patch: int, number_of_eggs_dist: dict):
         """
         Lay eggs in the specified patch.
 
@@ -187,7 +179,7 @@ class Environment(object):
 
         number_of_female_eggs = getattr(stats, number_of_eggs_dist["female"]["dist"]).rvs(*number_of_eggs_dist["female"]["params"])
         number_of_male_eggs = getattr(stats, number_of_eggs_dist["male"]["dist"]).rvs(*number_of_eggs_dist["male"]["params"])
-        K = min(max_eggs/(number_of_female_eggs + number_of_male_eggs), 1)
+        K = min(max_eggs / (number_of_female_eggs + number_of_male_eggs), 1)
         number_of_female_eggs *= K
         number_of_male_eggs *= K
         self.add_mosquitoes(
@@ -203,3 +195,12 @@ class Environment(object):
         :type control: Control
         """
         self.add_mosquitoes(control.get_mosquitoes(self.time, Adult))
+
+    def empty_queue(self) -> bool:
+        """
+        Check if the current mosquito queue is empty.
+
+        :return: True if the queue is empty, False otherwise.
+        :rtype: bool
+        """
+        return self.__mosquitoes[self.__current_queue].empty()

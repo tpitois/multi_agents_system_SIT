@@ -1,5 +1,8 @@
 import data.reading
 import sys
+import os
+os.environ["OPENBLAS_MAIN_FREE"] = "1"
+
 
 config = data.reading.read_config(*sys.argv[1:2])
 data.reading.config = config
