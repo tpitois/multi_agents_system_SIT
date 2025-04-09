@@ -3,7 +3,7 @@
   "dt": 1,
   "number_of_patches": 10,
   "mating_rates": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-  "capacity": [2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 3000],
+  "capacity": [2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000],
   "migration_rates": [
     [1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     [0.0, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -19,12 +19,12 @@
 
   "egg": {
     "lifespan": {
-      "dist": "geom",
-      "params": [0.01]
+      "dist": "weibull",
+      "params": [2.05, 3.27]
     },
     "maturing_age": {
       "dist": "norm",
-      "params": [2.5, 0.5]
+      "params": [2.1, 0.1]
     }
   },
 
@@ -55,9 +55,9 @@
 
   "male adult": {
     "lifespan": {
-      "dist": "geom",
+      "dist": "weibull",
       "params": [
-        0.10
+        2.1945968574915145, 22.84070720300488
       ]
     }
   },
@@ -65,17 +65,19 @@
   "sterile male adult":  {
     "competitiveness": 0.5,
     "lifespan": {
-      "dist": "geom",
+      "dist": "weibull",
       "params": [
-        0.001
+        2.1945968574915145, 16
       ]
     }
   },
 
   "female adult": {
     "lifespan": {
-      "dist": "geom",
-      "params": [0.05]
+      "dist": "weibull",
+      "params": [
+        2.208137541820492, 25.482192728652816
+      ]
     },
     "mate": {
       "next cycle": {

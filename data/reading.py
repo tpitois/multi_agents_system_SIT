@@ -1,8 +1,6 @@
 import json
 import pandas as pd
 
-config = {}
-
 def read_config(filename="example/config.json"):
     """
     Read the configuration from a JSON file.
@@ -15,22 +13,9 @@ def read_config(filename="example/config.json"):
     :rtype: dict
     """
     with open(filename) as f:
-        global config
-        config = json.load(f)
-        return config
+        return json.load(f)
 
-def get_config():
-    """
-    Get the current configuration.
-
-    This function returns the current configuration stored in the global `config` variable.
-
-    :return: Dictionary containing the configuration.
-    :rtype: dict
-    """
-    return config
-
-def read_init_mosquitoes(filename):
+def read_init_mosquitoes(filename, config):
     """
     Read the initial mosquitoes from a CSV file and create mosquito objects.
 
@@ -47,7 +32,7 @@ def read_init_mosquitoes(filename):
     for mosquito_name, numbers in df.items():
         type = agents.mosquito.name_to_type(mosquito_name)
         mosquito_class = getattr(agents.mosquito, type[0])
-        params = list(type[1:mosquito_class.__init__.__code__.co_argcount-1])
+        params = list(type[1:mosquito_class.__init__.__code__.co_argcount-2])
         for patch, number in enumerate(numbers):
-            mosquitoes += [mosquito_class(*([patch]+params)) for _ in range(int(number))]
+            mosquitoes += [mosquito_class(*([patch]+params+[config])) for _ in range(int(number))]
     return mosquitoes

@@ -2,8 +2,7 @@ import queue
 import random
 from typing import List, Optional, Tuple
 
-from scipy import stats
-
+from random_variable.random_variable import simulate
 from agents.mosquito import MOSQUITO_TYPE, Mosquito, Egg, Adult, name_to_type
 from environment.patch import Patch
 
@@ -78,12 +77,6 @@ class Environment:
         """
         return self.__mosquitoes[self.__current_queue].get()
 
-    def add_sentinel(self):
-        """
-        Add a sentinel (None) to the mosquito queue.
-        """
-        self.__mosquitoes[self.__current_queue].put(None)
-
     def next_time(self):
         """
         Advance the environment time by one time step.
@@ -113,7 +106,7 @@ class Environment:
             return None, False
 
         if lay_eggs:
-            self.__lay_eggs(mosquito.patch, config["female adult"]["mate"]["number of eggs"])
+            self.__lay_eggs(mosquito.patch, config)
 
         if new_mosquito.stage() != mosquito.stage():
             self.__patches[mosquito.patch].remove_mosquito(mosquito)
@@ -145,7 +138,7 @@ class Environment:
         :type mosquito: Mosquito
         """
         if mosquito.stage() != "Adult":
-            self.__add_mosquito(mosquito)
+            self.__mosquitoes[(self.__current_queue + 1) % 2].put(mosquito)
             return
 
         id_destination = self.__patches[mosquito.patch].random_destination()
@@ -164,7 +157,7 @@ class Environment:
         """
         return [[patch.get_mosquitoes_number(type) for type in MOSQUITO_TYPE] for patch in self.__patches]
 
-    def __lay_eggs(self, patch: int, number_of_eggs_dist: dict):
+    def __lay_eggs(self, patch: int, config: dict):
         """
         Lay eggs in the specified patch.
 
@@ -173,28 +166,34 @@ class Environment:
         :param number_of_eggs_dist: Distribution parameters for the number of eggs.
         :type number_of_eggs_dist: dict
         """
-        max_eggs = (self.__patches[patch].capacity -
-                    sum(self.__patches[patch].get_mosquitoes_number(name_to_type(name))
-                        for name in ["Male Egg", "Female Egg"]))
 
-        number_of_female_eggs = getattr(stats, number_of_eggs_dist["female"]["dist"]).rvs(*number_of_eggs_dist["female"]["params"])
-        number_of_male_eggs = getattr(stats, number_of_eggs_dist["male"]["dist"]).rvs(*number_of_eggs_dist["male"]["params"])
+        max_eggs = max(
+            0,
+            (self.__patches[patch].capacity -
+             sum(self.__patches[patch].get_mosquitoes_number(name_to_type(name))
+                 for name in ["Male Egg", "Female Egg"]))
+        )
+
+        number_of_eggs_dist = config["female adult"]["mate"]["number of eggs"]
+
+        number_of_female_eggs = simulate(number_of_eggs_dist["female"]["dist"], number_of_eggs_dist["female"]["params"])
+        number_of_male_eggs = simulate(number_of_eggs_dist["male"]["dist"], number_of_eggs_dist["male"]["params"])
         K = min(max_eggs / (number_of_female_eggs + number_of_male_eggs), 1)
         number_of_female_eggs *= K
         number_of_male_eggs *= K
         self.add_mosquitoes(
-            [Egg(patch, False) for _ in range(int(number_of_female_eggs))]
-            + [Egg(patch, True) for _ in range(int(number_of_male_eggs))]
+            [Egg(patch, False, config) for _ in range(int(number_of_female_eggs))]
+            + [Egg(patch, True, config) for _ in range(int(number_of_male_eggs))]
         )
 
-    def add_sterile_mosquitoes(self, control):
+    def add_sterile_mosquitoes(self, control, config):
         """
         Add sterile mosquitoes to the environment based on the control strategy.
 
         :param control: Control strategy for adding sterile mosquitoes.
         :type control: Control
         """
-        self.add_mosquitoes(control.get_mosquitoes(self.time, Adult))
+        self.add_mosquitoes(control.get_mosquitoes(self.time, Adult, config))
 
     def empty_queue(self) -> bool:
         """

@@ -39,7 +39,7 @@ class Control:
         """
         self.__control = pd.read_csv(filename).set_index('Time').values
 
-    def get_mosquitoes(self, time, mosquito_class):
+    def get_mosquitoes(self, time, mosquito_class, config):
         """
         Get the list of mosquitoes to be added at a specific time based on the control strategy.
 
@@ -52,5 +52,5 @@ class Control:
         """
         mosquitoes = []
         for i in range(self.__N):
-            mosquitoes += [mosquito_class(i, 0, True, False) for _ in range(int(self.__control[time, i]))]
+            mosquitoes += [mosquito_class(i, 10, True, False, config) for _ in range(int(self.__control[time, i]))]
         return mosquitoes
