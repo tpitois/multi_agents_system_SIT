@@ -64,11 +64,11 @@ class Result:
 
         :return: None
         """
-        os.makedirs(f"{self.__folder_name}/tables/", exist_ok=True)
+        #os.makedirs(f"{self.__folder_name}/tables/", exist_ok=True)
         for i in range(self.__N):
             df = pd.DataFrame(self.__result[i], columns=self.__column_names)
             df["Time"] = pd.Series([self.__dt * k for k in range(self.__nt)])
-            df.to_csv(f"{self.__folder_name}/tables/{i:0{len(str(self.__N))}}.csv", index=False)
+            df.to_csv(f"{self.__folder_name}/{i:0{len(str(self.__N-1))}}.csv", index=False)
 
     def read(self, folder_name):
         """

@@ -1,4 +1,7 @@
 matplotlib~=3.10.0
 numpy~=2.2.2
 pandas~=2.2.3
-scipy~=1.15.2
+polars~=1.27.0
+keras~=3.9.2
+scikit-learn~=1.6.1
+ipython~=9.1.0

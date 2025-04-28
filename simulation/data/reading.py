@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 
-def read_config(filename="example/config.json"):
+def read_config(filename):
     """
     Read the configuration from a JSON file.
 
@@ -13,7 +13,9 @@ def read_config(filename="example/config.json"):
     :rtype: dict
     """
     with open(filename) as f:
-        return json.load(f)
+        dico = json.load(f)
+
+    return dico
 
 def read_init_mosquitoes(filename, config):
     """

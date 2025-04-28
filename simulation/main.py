@@ -13,9 +13,7 @@ os.environ["OPENBLAS_MAIN_FREE"] = "1"
 
 
 config = read_config(*sys.argv[1:2])
-init_mosquito_file="example/init_mosquitoes.csv"
-control_file="example/control.csv"
-folder_name="results"
+init_mosquito_file, control_file, folder_name = sys.argv[2:]
 
 T = config["period"]
 dt = config["dt"]
@@ -37,7 +35,7 @@ tic = time.time()
 while environment.time < T:
 
     if environment.empty_queue():
-        print(environment.time)
+        #print(environment.time)
         result.add_populations(environment.get_populations())
         environment.add_sterile_mosquitoes(control, config)
         environment.next_time()

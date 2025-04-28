@@ -1,6 +1,9 @@
 # Ignore results folder
 results/
 
+# Ignore dataset folder
+dataset/
+
 # Ignore PyCharm .idea folder
 .idea/
 
@@ -168,3 +171,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+/dataset/
+/dataset/
