@@ -75,7 +75,7 @@ class Environment:
         :return: Next mosquito.
         :rtype: Mosquito
         """
-        return self.__mosquitoes[self.__current_queue].get()
+        return self.__mosquitoes[self.__current_queue].get_nowait()
 
     def next_time(self):
         """

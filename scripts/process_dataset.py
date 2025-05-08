@@ -21,6 +21,14 @@ def read_simulation(simulation_folder):
     sterile_male = np.concatenate(sterile_male_list, axis=1)
     return np.concatenate((wild_pop, sterile_male), axis=1), sterile_male.shape[1]
 
+def process_seq2seq(simulation_folder, lookback):
+    data, nb_sterile = read_simulation(simulation_folder)
+    return data[:lookback, :data.shape[1]-nb_sterile], data[lookback:, :data.shape[1]-nb_sterile]
+
+def read_dataset_seq2seq(dataset, lookback):
+    X_list, Y_list = zip(*[process_seq2seq(folder.path, lookback) for folder in os.scandir(dataset)])
+    return np.array(X_list), np.array(Y_list)
+
 def simu_to_lookback(simulation_folder, lookback):
     data, nb_sterile = read_simulation(simulation_folder)
     X_list, Y_list  = [], []
