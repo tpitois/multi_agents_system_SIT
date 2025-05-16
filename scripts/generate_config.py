@@ -12,7 +12,7 @@ def random_matrix(N):
     return res.tolist()
 
 def init_mosquitoes(simulation_folder):
-    df = pd.DataFrame(0*np.ones((10, 2)), columns=["Male Egg", "Female Egg"])
+    df = pd.DataFrame(1000*np.ones((10, 2)), columns=["Male Egg", "Female Egg"])
     """
     df = pd.concat([pd.read_csv(f"{simulation_folder}{i}.csv").iloc[-1] for i in range(10)], axis=1).T
     df = df.drop("Time", axis=1)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     dico["number_of_patches"] = N
     dico["period"] = T
     dico["mating_rates"] = list(np.random.uniform(0.1, 0.3, N))
-    dico["capacity"] = list(np.random.uniform(1000, 2000, N))
+    dico["capacity"] = list(np.random.uniform(int(2e4), int(1e5), N))
     dico["migration_rates"] = random_matrix(N)
 
     with open("config/config.json", "w") as outfile:

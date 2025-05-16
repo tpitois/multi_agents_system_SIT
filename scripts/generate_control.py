@@ -15,4 +15,4 @@ if __name__ == "__main__":
     with open(sys.argv[1]) as f:
         dico = json.load(f)
 
-    control(dico["number_of_patches"], dico["period"], np.random.uniform(2000, 20000)).to_csv(sys.argv[2], index=False)
+    control(dico["number_of_patches"], dico["period"], np.random.uniform(0, int(1e5))).to_csv(sys.argv[2], index=False)
