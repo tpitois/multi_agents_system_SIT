@@ -9,11 +9,13 @@ from pathlib import Path
 
 def read_patch(patch_file):
     df = pd.read_csv(patch_file)
+    print(df.columns)
     df = df.drop("Time", axis=1)
     sterile_male_col = df.pop("Sterile Male Adult")
     return df.values, sterile_male_col.values.reshape(-1, 1)
 
 def read_simulation(simulation_folder):
+    print(simulation_folder)
     path2csv = Path(simulation_folder)
     nb_csvfile = len(list(path2csv.glob("*.csv")))
     csvlist = [f"{simulation_folder}/{i:0{len(str(nb_csvfile-1))}}.csv" for i in range(nb_csvfile)]
