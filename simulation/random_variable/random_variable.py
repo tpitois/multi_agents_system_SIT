@@ -9,6 +9,8 @@ def simulate(name, params):
         case "geom":
             return np.random.geometric(*params)
         case "norm":
-            return np.random.normal(*params)
+            return max(np.random.normal(*params), 0.1)
         case "weibull":
             return params[1]*(-np.log(np.random.rand()))**(1/params[0])
+        case "bernoulli":
+            return np.random.binomial(1, params[0]) 

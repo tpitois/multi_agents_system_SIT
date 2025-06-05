@@ -94,9 +94,9 @@ class Result:
         fig, axs = plt.subplots(rows, cols, figsize=(15, 10), constrained_layout=False)
         axs = axs.flatten()
         time_interval = [self.__dt * k for k in range(self.__nt)]
-        y_max = np.max(self.__result)
+        y_max = np.max(self.__result[:,:,3:])
         for i in range(self.__N):
-            for j in range(len(self.__column_names)):
+            for j in range(3,len(self.__column_names)):
                 ax = axs[i]
                 ax.plot(time_interval, self.__result[i, :, j], label=self.__column_names[j])
                 ax.set_title(f"{i:0{len(str(self.__N))}}")

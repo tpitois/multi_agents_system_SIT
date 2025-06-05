@@ -1,0 +1,114 @@
+{
+    "period": 120,
+    "dt": 1,
+    "number_of_patches": 2,
+    "mating_rates": [
+        0.2,
+        0.2
+    ],
+    "capacity": [
+        10000,
+        10000
+    ],
+    "migration_rates": [
+        [
+            0.4,
+            0.6
+        ],
+        [
+            0.01,
+            0.99
+        ]
+    ],
+    "egg": {
+        "duration": {
+            "dist": "uniform",
+            "params": [
+                4.5,
+                0.7
+            ]
+        },
+        "survival_rate": 0.492
+    },
+    "larva": {
+        "duration": {
+            "dist": "uniform",
+            "params": [
+                7.3,
+                0.6
+            ]
+        },
+        "survival_rate": 0.812
+    },
+    "pupa": {
+        "duration": {
+            "dist": "uniform",
+            "params": [
+                2.7,
+                0.1
+            ]
+        },
+        "survival_rate": 0.938
+    },
+    "male adult": {
+        "lifespan": {
+            "dist": "weibull",
+            "params": [
+                2.1945968574915145,
+                22.84070720300488
+            ]
+        }
+    },
+    "sterile male adult": {
+        "competitiveness": 0.5,
+        "lifespan": {
+            "dist": "weibull",
+            "params": [
+                2.1945968574915145,
+                16
+            ]
+        }
+    },
+    "female adult": {
+        "lifespan": {
+            "dist": "weibull",
+            "params": [
+                2.208137541820492,
+                25.482192728652816
+            ]
+        },
+        "mate": {
+            "next cycle": {
+                "dist": "norm",
+                "params": [
+                    5,
+                    1
+                ]
+            },
+            "number of eggs": {
+                "male": {
+                    "dist": "norm",
+                    "params": [
+                        25,
+                        5
+                    ]
+                },
+                "female": {
+                    "dist": "norm",
+                    "params": [
+                        25,
+                        5
+                    ]
+                }
+            },
+            "max cycle": 7
+        },
+        "first blood": {
+            "dist": "norm",
+            "params": [
+                5.54,
+                0.82
+            ]
+        }
+    }
+}

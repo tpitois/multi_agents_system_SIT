@@ -106,7 +106,8 @@ class Environment:
             return None, False
 
         if lay_eggs:
-            self.__lay_eggs(mosquito.patch, config)
+            nb_m, nb_f = self.__lay_eggs(mosquito.patch, config)
+            mosquito.nb_eggs = mosquito.nb_eggs + nb_m + nb_f
 
         if new_mosquito.stage() != mosquito.stage():
             self.__patches[mosquito.patch].remove_mosquito(mosquito)
@@ -182,9 +183,10 @@ class Environment:
         number_of_female_eggs *= K
         number_of_male_eggs *= K
         self.add_mosquitoes(
-            [Egg(patch, False, config) for _ in range(int(number_of_female_eggs))]
-            + [Egg(patch, True, config) for _ in range(int(number_of_male_eggs))]
+            [Egg(patch=patch, male=False, config=config) for _ in range(int(number_of_female_eggs))]
+            + [Egg(patch=patch, male=True, config=config) for _ in range(int(number_of_male_eggs))]
         )
+        return int(number_of_female_eggs), int(number_of_male_eggs)
 
     def add_sterile_mosquitoes(self, control, config):
         """
