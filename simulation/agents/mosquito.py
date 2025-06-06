@@ -254,8 +254,8 @@ class Adult(Mosquito):
     def __init__(self, patch, age, male, fertile, config):
         lifespan_key = ["female adult", "male adult", "sterile male adult"][male + (not fertile)]
         super().__init__(patch, age, male, config[lifespan_key]["lifespan"], config["egg"]["survival_rate"], fertile=fertile)
-        self.__cycle_number = 0
-        self.__next_cycle = simulate(config["female adult"]["first blood"]["dist"], config["female adult"]["first blood"]["params"])
+        self.__cycle_number = 1
+        self.__next_cycle = 0
         self.__config = config
 
     def grow_old(self, dt):
@@ -272,7 +272,7 @@ class Adult(Mosquito):
         self._Mosquito__age += dt
         if self._Mosquito__age > self._Mosquito__duration:
             return self, False, False
-        if (not self._Mosquito__male and self.__cycle_number < self.__config["female adult"]["mate"]["max cycle"]
+        if (self._Mosquito__mated and not self._Mosquito__male and self.__cycle_number < self.__config["female adult"]["mate"]["max cycle"]
                 and self.__next_cycle - dt < self._Mosquito__age < self.__next_cycle + dt):
             self.__new_cycle()
             return self, True, True
@@ -297,7 +297,7 @@ class Adult(Mosquito):
         :type patch: Patch
         """
         patch.remove_mosquito(self)
-        self.__new_cycle()
+        self.__next_cycle = self._Mosquito__age + simulate(self.__config["female adult"]["first blood"]["dist"], self.__config["female adult"]["first blood"]["params"])
         self._Mosquito__mated = True
         patch.add_mosquito(self)
 

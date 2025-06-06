@@ -1,5 +1,5 @@
 {
-    "period": 120,
+    "period": 150,
     "dt": 1,
     "number_of_patches": 2,
     "mating_rates": [
@@ -12,12 +12,12 @@
     ],
     "migration_rates": [
         [
-            0.4,
-            0.6
+            0.3,
+            0.7
         ],
         [
-            0.01,
-            0.99
+            0.35,
+            0.65
         ]
     ],
     "egg": {
@@ -89,19 +89,19 @@
                 "male": {
                     "dist": "norm",
                     "params": [
-                        25,
+                        10,
                         5
                     ]
                 },
                 "female": {
                     "dist": "norm",
                     "params": [
-                        25,
+                        9,
                         5
                     ]
                 }
             },
-            "max cycle": 7
+            "max cycle": 5
         },
         "first blood": {
             "dist": "norm",

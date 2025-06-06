@@ -9,13 +9,11 @@ from pathlib import Path
 
 def read_patch(patch_file):
     df = pd.read_csv(patch_file)
-    print(df.columns)
     df = df.drop("Time", axis=1)
     sterile_male_col = df.pop("Sterile Male Adult")
     return df.values, sterile_male_col.values.reshape(-1, 1)
 
 def read_simulation(simulation_folder):
-    print(simulation_folder)
     path2csv = Path(simulation_folder)
     nb_csvfile = len(list(path2csv.glob("*.csv")))
     csvlist = [f"{simulation_folder}/{i:0{len(str(nb_csvfile-1))}}.csv" for i in range(nb_csvfile)]
@@ -25,14 +23,14 @@ def read_simulation(simulation_folder):
     return np.concatenate((wild_pop, sterile_male), axis=1), sterile_male.shape[1]
 
 def process_seq2seq(data, window_len, forecast_len, nb_patches):
-    return data[:window_len, :], data[window_len:window_len+forecast_len, -nb_patches:], data[window_len:window_len+forecast_len, :-nb_patches]
+    return data[:window_len, :], data[window_len:window_len+forecast_len, -nb_patches:], data[window_len:window_len+forecast_len, :]
 
 def read_dataset_seq2seq(dataset, window_len, forecast_len, nb_patches):
     scaler = MinMaxScaler(feature_range=(0, 1))
     data = [read_simulation(folder.path)[0] for folder in os.scandir(dataset)]
     scaler.fit(np.concatenate(data))
     past_list, deterministic_future_list, future_list =  zip(*[process_seq2seq(scaler.transform(simu), window_len, forecast_len, nb_patches) for simu in data])
-    return np.array(past_list), np.array(deterministic_future_list), np.array(future_list)
+    return np.array(past_list), np.array(deterministic_future_list), np.array(future_list), scaler
 
 def simu_to_lookback(simulation_folder, lookback):
     data, nb_sterile = read_simulation(simulation_folder)

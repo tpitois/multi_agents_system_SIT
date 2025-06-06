@@ -20,6 +20,7 @@ do
   echo $i
   mkdir $i
   python3 $generate_control_path $config_path ../_config/control.csv
+  cp ../_config/control.csv $i/control.csv
   python3 $main_path $config_path $init_path $control_path $i
 done
 
