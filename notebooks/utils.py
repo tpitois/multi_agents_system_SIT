@@ -26,3 +26,6 @@ def plot_loss(model):
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
     plt.show()
+
+def read_simulation_control(filepath):
+    return pd.read_csv(filepath).set_index('Time').values
