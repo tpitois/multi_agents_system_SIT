@@ -5,6 +5,7 @@ import pandas as pd
 import json
 
 def control(N, T, control_value):
+    control_value = [78918.17117199, 82063.88751343]
     mat = np.zeros((T, N))
     for i, val in enumerate(control_value):
         mat[20::7, i] = val
